@@ -37,7 +37,7 @@ variable "create_default_stage_api_mapping" {
 variable "create_api_domain_name" {
   description = "Whether to create API domain name resource"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_routes_and_integrations" {

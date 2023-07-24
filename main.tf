@@ -50,3 +50,29 @@ module "lambda_app" {
   timeout       = 8
 }
 
+module "api_gateway" {
+  source = "./api_gateway_module"
+  name                = "dev-http"
+  description         = "My awesome HTTP API Gateway"
+  cors_configuration  = {
+    allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
+    allow_methods = ["*"]
+    allow_origins = ["*"]
+  }
+  authorizers         = {
+    "sap_cdc" = {
+      authorizer_type                   = "REQUEST"
+      identity_sources                  = "$request.header.Authorization"
+      name                              = "sap-cdc-auth"
+      authorizer_uri                    = module.lambda_authorizer.lambda_function_arn
+      authorizer_payload_format_version = "2.0"
+    }
+  }
+  integrations        = {
+    "$default" = {
+      lambda_arn = module.lambda_app.lambda_function_arn
+      authorizer_key   = "sap_cdc"
+    }
+  }
+}
+
