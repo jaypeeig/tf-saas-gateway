@@ -30,7 +30,6 @@ module "lambda_authorizer" {
   source_path   = "./src/lambda-handler"
   memory_size   = 256
   timeout       = 20
-
   environment_variables = {
     NAME: "AUTHORIZER"
   }

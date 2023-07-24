@@ -1,6 +1,7 @@
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
-
+  version = "5.3.0"
+  
   function_name         = var.function_name
   description           = var.description
   handler               = var.handler
