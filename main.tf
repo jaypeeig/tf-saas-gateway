@@ -25,7 +25,7 @@ module "lambda_authorizer" {
   source        = "./lambda_module"
   function_name = "auth-function"
   description   = "custom lambda authorizer"
-  handler       = "index.lambda_handler"
+  handler       = "index.handler"
   runtime       = "nodejs18.x"
   source_path   = "./src/lambda-handler"
   memory_size   = 256
