@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.61.0"
+      version = "~> 5.0"
     }
   }
   required_version = "~> 1.4.4"
@@ -27,8 +27,8 @@ module "lambda_authorizer" {
   description   = "custom lambda authorizer"
   handler       = "index.handler"
   runtime       = "nodejs18.x"
-  source_path   = "./src/lambda-handler"
-  memory_size   = 256
+  source_path   = "./src/auth-handler"
+  memory_size   = 128
   timeout       = 20
   environment_variables = {
     NAME: "AUTHORIZER"
@@ -37,5 +37,16 @@ module "lambda_authorizer" {
   tags = {
     ENVIRONEMT: "DEV"
   }
-
 }
+
+module "lambda_app" {
+  source        = "./lambda_module"
+  function_name = "app-function"
+  description   = "test lambda"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  source_path   = "./src/test-handler"
+  memory_size   = 128
+  timeout       = 8
+}
+
