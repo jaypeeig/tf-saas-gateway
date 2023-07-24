@@ -32,3 +32,11 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+
+# Lambda directories
+builds/
+__pycache__/
+
+# Test directories
+.tox

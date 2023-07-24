@@ -13,7 +13,6 @@ provider "aws" {
   region = "ap-southeast-1"
 
   # Make it faster by skipping something
-  skip_get_ec2_platforms      = true
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
@@ -23,5 +22,21 @@ provider "aws" {
 }
 
 module "lambda_authorizer" {
-  source = "./lambda_module"
+  source        = "./lambda_module"
+  function_name = "auth-function"
+  description   = "custom lambda authorizer"
+  handler       = "index.lambda_handler"
+  runtime       = "nodejs18.x"
+  source_path   = "./src/lambda-handler"
+  memory_size   = 256
+  timeout       = 20
+
+  environment_variables = {
+    NAME: "AUTHORIZER"
+  }
+
+  tags = {
+    ENVIRONEMT: "DEV"
+  }
+
 }
