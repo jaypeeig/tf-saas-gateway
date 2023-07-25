@@ -53,22 +53,25 @@ module "api_gateway_v2" {
     allow_origins = ["*"]
   }
   authorizers         = {
-    "sap_cdc" = {
-      authorizer_type                   = "TOKEN"
+    "sapcdc" = {
+      authorizer_type                   = "REQUEST"
       identity_sources                  = "$request.header.Authorization"
       name                              = "sap_cdc"
-      authorizer_payload_format_version = "1.0"
+      authorizer_payload_format_version = "2.0"
+      authorizer_uri                    = module.lambda_authorizer.lambda_function_invoke_arn
+
     }
   }
   integrations        = {
-
     "ANY /" = {
       lambda_arn              = module.lambda_app.lambda_function_arn
-      payload_format_version  = "1.0"
+      payload_format_version  = "2.0"
     }
 
-    "$default" = {
-      lambda_arn = module.lambda_app.lambda_function_arn
+    "GET /test" = {
+      lambda_arn             = module.lambda_app.lambda_function_arn
+      payload_format_version = "2.0"
+      authorizer_key         = "sapcdc"
     }
   }
 }
