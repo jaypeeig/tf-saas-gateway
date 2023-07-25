@@ -83,11 +83,14 @@ module "api_gateway_v2" {
     "GET /test" = {
       lambda_arn             = module.lambda_app.lambda_function_arn
       payload_format_version = "2.0"
-      authorizer_key         = "sapcdc"
     }
   }
 }
 
-output "apigatewayv2_api_api_endpoint" {
+output "apigatewayv2_api_endpoint" {
   value = module.api_gateway_v2.apigatewayv2_api_api_endpoint
+}
+
+output "apigatewayv2_api_arn" {
+  value = module.api_gateway_v2.apigatewayv2_api_arn
 }

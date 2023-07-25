@@ -84,7 +84,7 @@ variable "ephemeral_storage_size" {
 variable "publish" {
   description = "Whether to publish creation/change as new Lambda Function Version."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "reserved_concurrent_executions" {
