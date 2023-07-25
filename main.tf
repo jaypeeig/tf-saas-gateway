@@ -8,10 +8,16 @@ terraform {
   required_version = "~> 1.4.4"
 }
 
-
 provider "aws" {
   region  = "ap-southeast-1"
   profile = "sandbox"
+}
+
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+locals {
+  region      = data.aws_region.current.name
+  account_id  = data.aws_caller_identity.current.account_id
 }
 
 module "lambda_authorizer" {
@@ -33,14 +39,20 @@ module "lambda_authorizer" {
 }
 
 module "lambda_app" {
-  source        = "./lambda_module"
-  function_name = "app-function"
-  description   = "test lambda"
-  handler       = "index.handler"
-  runtime       = "nodejs18.x"
-  source_path   = "./src/test-handler"
-  memory_size   = 128
-  timeout       = 8
+  source            = "./lambda_module"
+  function_name     = "app-function"
+  description       = "test lambda"
+  handler           = "index.handler"
+  runtime           = "nodejs18.x"
+  source_path       = "./src/test-handler"
+  memory_size       = 128
+  timeout           = 8
+  allowed_triggers  = {
+    APIGatewayAny = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:*/*/*/*"
+    },
+  } 
 }
 
 module "api_gateway_v2" {

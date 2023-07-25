@@ -9,6 +9,7 @@ module "lambda" {
   source_path           = var.source_path
   memory_size           = var.memory_size
   timeout               = var.timeout
+  allowed_triggers      = var.allowed_triggers
   environment_variables = var.environment_variables
   tags                  = var.tags
 }
