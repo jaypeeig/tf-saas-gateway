@@ -1,35 +1,46 @@
-function extractTokenFromHeader(e) {
-  if (e.authorizationToken && e.authorizationToken.split(' ')[0] === 'Bearer') {
-      return e.authorizationToken.split(' ')[1];
-  } else {
-      return e.authorizationToken;
-  }
-}
-
-function validateToken(token, callback) {
-  const allow = {
-    "principalId": "user",
-      "policyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-              {
-                  "Action": "execute-api:Invoke",
-                  "Effect": "Allow",
-                  "Resource": process.env.RESOURCE
-              }
-          ]
+const handler = async (event) => {
+  console.log('Evt: ' + event.headers.authorization)
+  if (event.headers.authorization === "Bearer salaam") {
+    console.log("allowed");
+    return {
+      principalId: "abcdef", // The principal user identification associated with the token sent by the client.
+      policyDocument: {
+        Version: "2012-10-17",
+        Statement: [{
+          Action: "execute-api:Invoke",
+          Effect: "Allow",
+          Resource: event.routeArn
+        }]
+      },
+      context: {
+        stringKey: "value",
+        numberKey: 1,
+        booleanKey: true,
+        arrayKey: ["value1", "value2"],
+        mapKey: { value1: "value2" }
       }
-  }
-  
-  if(token === 'Salam') {
-    callback(null, allow)
+    };
   } else {
-    callback("Unauthorized")
+    console.log("denied");
+    return {
+      principalId: "abcdef", // The principal user identification associated with the token sent by the client.
+      policyDocument: {
+        Version: "2012-10-17",
+        Statement: [{
+          Action: "execute-api:Invoke",
+          Effect: "Deny",
+          Resource: event.routeArn
+        }]
+      },
+      context: {
+        stringKey: "value",
+        numberKey: 1,
+        booleanKey: true,
+        arrayKey: ["value1", "value2"],
+        mapKey: { value1: "value2" }
+      }
+    };
   }
+};
 
-}
-
-exports.handler = (event, context, callback) => {
-  const token = extractTokenFromHeader(event) || '';
-  validateToken(token, callback);
-}
+module.exports = { handler };

@@ -29,6 +29,12 @@ module "lambda_authorizer" {
   source_path   = "./src/auth-handler"
   memory_size   = 128
   timeout       = 20
+  allowed_triggers  = {
+    APIGatewayAny = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:*/authorizers/*"
+    },
+  } 
   environment_variables = {
     NAME: "AUTHORIZER"
   }
@@ -50,9 +56,13 @@ module "lambda_app" {
   allowed_triggers  = {
     APIGatewayAny = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:*/*/*/*"
+      source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:**"
     },
   } 
+}
+resource "aws_cloudwatch_log_group" "debug-apigateway" {
+  name = "debug-apigateway"
+  retention_in_days = 1
 }
 
 module "api_gateway_v2" {
@@ -64,14 +74,17 @@ module "api_gateway_v2" {
     allow_methods = ["*"]
     allow_origins = ["*"]
   }
+
+  default_stage_access_log_destination_arn = aws_cloudwatch_log_group.debug-apigateway.arn
+  default_stage_access_log_format          = "$context.identity.sourceIp - - [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId $context.integrationErrorMessage -- $context.authorizer.error"
+  
   authorizers         = {
     "sapcdc" = {
       authorizer_type                   = "REQUEST"
       identity_sources                  = "$request.header.Authorization"
-      name                              = "sap_cdc"
+      name                              = "sapcdc"
       authorizer_payload_format_version = "2.0"
       authorizer_uri                    = module.lambda_authorizer.lambda_function_invoke_arn
-
     }
   }
   integrations        = {
@@ -83,6 +96,8 @@ module "api_gateway_v2" {
     "GET /test" = {
       lambda_arn             = module.lambda_app.lambda_function_arn
       payload_format_version = "2.0"
+      authorization_type     = "CUSTOM"
+      authorizer_key         = "sapcdc"
     }
   }
 }

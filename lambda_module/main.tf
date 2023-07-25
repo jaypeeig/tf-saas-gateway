@@ -13,4 +13,6 @@ module "lambda" {
   publish               = var.publish
   environment_variables = var.environment_variables
   tags                  = var.tags
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }

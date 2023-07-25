@@ -8,4 +8,7 @@ module "apigateway_v2" {
   authorizers             = var.authorizers
   integrations            = var.integrations
   create_api_domain_name  = var.create_api_domain_name
+
+  default_stage_access_log_destination_arn = var.default_stage_access_log_destination_arn
+  default_stage_access_log_format          = var.default_stage_access_log_format
 }
