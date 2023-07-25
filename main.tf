@@ -10,15 +10,8 @@ terraform {
 
 
 provider "aws" {
-  region = "ap-southeast-1"
-
-  # Make it faster by skipping something
-  skip_metadata_api_check     = true
-  skip_region_validation      = true
-  skip_credentials_validation = true
-
-  # skip_requesting_account_id should be disabled to generate valid ARN in apigatewayv2_api_execution_arn
-  skip_requesting_account_id = false
+  region  = "ap-southeast-1"
+  profile = "sandbox"
 }
 
 module "lambda_authorizer" {
@@ -50,8 +43,8 @@ module "lambda_app" {
   timeout       = 8
 }
 
-module "api_gateway" {
-  source = "./api_gateway_module"
+module "api_gateway_v2" {
+  source = "./api_gateway_v2_module"
   name                = "dev-http"
   description         = "My awesome HTTP API Gateway"
   cors_configuration  = {
@@ -61,18 +54,24 @@ module "api_gateway" {
   }
   authorizers         = {
     "sap_cdc" = {
-      authorizer_type                   = "REQUEST"
+      authorizer_type                   = "TOKEN"
       identity_sources                  = "$request.header.Authorization"
-      name                              = "sap-cdc-auth"
-      authorizer_uri                    = module.lambda_authorizer.lambda_function_arn
-      authorizer_payload_format_version = "2.0"
+      name                              = "sap_cdc"
+      authorizer_payload_format_version = "1.0"
     }
   }
   integrations        = {
+
+    "ANY /" = {
+      lambda_arn              = module.lambda_app.lambda_function_arn
+      payload_format_version  = "1.0"
+    }
+
     "$default" = {
       lambda_arn = module.lambda_app.lambda_function_arn
-      authorizer_key   = "sap_cdc"
     }
-  }
 }
 
+output "apigatewayv2_api_api_endpoint" {
+  value = module.api_gateway_v2.apigatewayv2_api_api_endpoint
+}
