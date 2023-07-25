@@ -70,6 +70,7 @@ module "api_gateway_v2" {
     "$default" = {
       lambda_arn = module.lambda_app.lambda_function_arn
     }
+  }
 }
 
 output "apigatewayv2_api_api_endpoint" {
