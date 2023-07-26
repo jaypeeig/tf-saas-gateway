@@ -26,7 +26,12 @@ module "lambda_authorizer" {
   description   = "custom lambda authorizer"
   handler       = "index.handler"
   runtime       = "nodejs18.x"
-  source_path   = "./src/auth-handler"
+  source_path   = [
+    {
+      path = "./src/auth-handler",
+      npm_requirements = false
+    }
+  ]
   memory_size   = 128
   timeout       = 20
   allowed_triggers  = {
