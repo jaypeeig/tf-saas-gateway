@@ -29,7 +29,7 @@ graph LR
 
 6. **Limited Features:** HTTP APIs lack support for certain features present in REST APIs, such as AWS X-Ray integration, Canary deployments, and Web Application Firewall (WAF) support.
 
-## REST API (Introduced in July 2015 by AWS)
+## REST API (V1, Introduced in 2015 by AWS)
 
 1. **Purpose:** The REST API was the original version of the API Gateway, designed to create, deploy, and manage APIs. It supports a wide array of AWS services and features.
 
