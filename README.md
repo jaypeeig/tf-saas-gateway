@@ -46,3 +46,25 @@ graph LR
 4. **Private Integrations:** REST APIs support private integrations with Network Load Balancers, but the setup process is less straightforward than with HTTP APIs.
 
 5. **OpenAPI Support:** REST APIs support the import of API definitions from OpenAPI, a feature not currently supported by HTTP APIs.
+
+<div align="center">
+
+## Lambda Authorizer config
+
+</div>
+
+1. Lambda Concurrency Settings:
+    - **Provisioned Concurrency:** If you have predictable peak traffic and want to avoid cold starts, configure provisioned concurrency. The number you set should be based on the peak expected simultaneous requests.
+    - **Reserved Concurrency:** For essential services like authorizers, setting a reserved concurrency is crucial to ensure the availability of this function. A value of 50-100 could be a good starting point, but you need to adjust it based on your needs and overall account limits.
+
+
+
+
+2. Lambda Memory and Timeout Settings:
+
+    - **Memory Allocation:** The optimal memory depends on the nature of the authorization logic. As a starting point, 128MB could be enough. However, if the authorization logic is complex or involves heavy computation, you may need to increase this value. Keep in mind that AWS charges based on the amount of memory allocated, and more memory also means more CPU power.
+    - **Timeout:** The timeout should be as low as possible because the API Gateway has a total timeout of 29 seconds for the integration, which includes the time taken by the Lambda authorizer and the backend. A good starting point could be between 3-6 seconds, but it depends on your Lambda function's performance.
+
+3. API Gateway Settings:
+
+    - **Lambda Authorizer Result TTL:** This value defines how long the result from the authorizer is cached. It could be set from 0 (disabling cache) to 3600 seconds. A value between 300 (5 minutes) to 900 (15 minutes) could be a good starting point.
