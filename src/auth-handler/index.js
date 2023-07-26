@@ -24,6 +24,7 @@ const responsePolicy = (effect, routeArn, context) => {
 }
 
 const handler = async (event) => {
+  const idToken = event.headers.authorization.split(' ')[1];
   const jwks = await axios.get(webKeyUrl);
   const publicKey = jwks.data;
   const modulus = Buffer.from(deserializeKey(publicKey.n), 'base64')
