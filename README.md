@@ -14,7 +14,13 @@ graph LR
 
 # Discoveries
 
-- API Gateway type selection
+
+<div align="center">
+
+## API Gateway type selection
+
+</div>
+
 ## HTTP API (V2, Introduced in 2019 by AWS)
 
 1. **Purpose:** The HTTP API was introduced to simplify the API Gateway model and to improve the development and deployment experience. It was designed to be simpler and more efficient than the REST API, and supports HTTP/1.1 and HTTP/2 protocols.
